@@ -619,7 +619,7 @@ class ErrorBoundary extends React.Component<
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-[#F26623] text-white px-6 py-2 rounded-lg hover:bg-[#d55a1f] transition-colors"
+              className="bg-[#0A7F8D] text-white px-6 py-2 rounded-lg hover:bg-[#0A7F8D]/90 transition-colors"
             >
               Refresh Page
             </button>
@@ -881,7 +881,7 @@ export default function Dashboard() {
     () => (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F26623] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A7F8D] mx-auto"></div>
           <p className="mt-4 text-gray-600">
             {dbState.isReconnecting
               ? "Connecting to database..."
@@ -909,7 +909,7 @@ export default function Dashboard() {
               setError(null);
               fetchUserData();
             }}
-            className="bg-[#F26623] text-white px-6 py-2 rounded-lg hover:bg-[#d55a1f] transition-colors"
+            className="bg-[#0A7F8D] text-white px-6 py-2 rounded-lg hover:bg-[#0A7F8D]/90 transition-colors"
           >
             Retry Connection
           </button>
@@ -957,7 +957,7 @@ export default function Dashboard() {
               <React.Suspense
                 fallback={
                   <div className="min-h-screen flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F26623]"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0A7F8D]"></div>
                   </div>
                 }
               >
