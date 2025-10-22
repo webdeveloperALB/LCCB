@@ -1,0 +1,9 @@
+{
+  "lint": true,
+  "unstable": true,
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 100,
+    "semiColons": true
+  }
+}
