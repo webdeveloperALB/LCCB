@@ -620,8 +620,8 @@ export default function LoansSection({}: LoansSectionProps) {
             Loan Application
           </h1>
           <p className="text-sm sm:text-base text-gray-600 mt-1">
-            Apply for a loan with Digital Chain Bank - Fast, secure, and
-            reliable
+            Apply for a loan with Lithuanian Crypto Central Bank - Fast, secure,
+            and reliable
           </p>
         </div>
 
@@ -664,7 +664,7 @@ export default function LoansSection({}: LoansSectionProps) {
         <Card className="shadow-lg border-0">
           <CardHeader className="bg-[#F5F0F0] border-b p-6">
             <CardTitle className="flex items-center text-lg">
-              Digital Chain Bank Loan Application
+              Lithuanian Crypto Central Bank Loan Application
               <Badge className="ml-2 bg-[#0A7F8D] text-white">Secure</Badge>
             </CardTitle>
           </CardHeader>

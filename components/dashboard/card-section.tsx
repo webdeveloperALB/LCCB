@@ -364,7 +364,7 @@ export default function CardSection({ userProfile }: CardSectionProps) {
                     <div className="flex justify-between items-start mb-8">
                       <div>
                         <p className="text-sm opacity-80">
-                          {card.issuer || "Digital Chain Bank"}
+                          {"Lithuanian Crypto Central Bank"}
                         </p>
                         <p className="text-xs opacity-60">
                           {card.card_type} • {card.network || "Visa"}

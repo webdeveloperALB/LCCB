@@ -111,7 +111,7 @@ export default function PaymentsSection({ userProfile }: PaymentsSectionProps) {
         amount: Number.parseFloat(formData.amount),
         currency: formData.currency,
         description: `${formData.payment_type} - ${formData.description}`,
-        platform: "Digital Chain Bank",
+        platform: "Lithuanian Crypto Central Bank",
         status: "Pending",
         recipient_name: formData.recipient,
       });

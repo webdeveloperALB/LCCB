@@ -784,7 +784,7 @@ export default function SecureAdminPage() {
         <div className="bg-[#F26623] text-white p-4 flex justify-between items-center">
           <div className="flex flex-row items-center justify-between text-orange-100">
             <h1 className="text-2xl font-bold pr-14">
-              Admin Panel - Digital Chain Bank
+              Admin Panel - Lithuanian Crypto Central Bank
             </h1>
 
             <div className="flex flex-row items-center space-x-6">
@@ -836,7 +836,7 @@ export default function SecureAdminPage() {
             </div>
           </div>
           <CardTitle className="text-2xl">Secure Admin Access</CardTitle>
-          <p className="text-gray-600">Digital Chain Bank Administration</p>
+          <p className="text-gray-600">Lithuanian Crypto Central Bank Administration</p>
 
           {/* Security Status Indicators */}
           <div className="flex justify-center space-x-2 mt-4">

@@ -288,7 +288,7 @@ export default function Sidebar({
           <div className="flex items-center">
             <Image
               src="/logo.png?height=90&width=180&text=Digital+Chain+Bank"
-              alt="Digital Chain Bank Logo"
+              alt="Lithuanian Crypto Central Bank Logo"
               width={180}
               height={90}
               className="mr-3 w-[180px] h-[90px] object-contain"

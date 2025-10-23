@@ -300,7 +300,7 @@ export default function AuthForm() {
               <div className="transform overflow-visible">
                 <img
                   src="/logo.png"
-                  alt="Digital Chain Bank Logo"
+                  alt="Lithuanian Crypto Central Bank Logo"
                   className="h-[60px] sm:h-[160px] w-auto object-contain scale-110 sm:scale-125 lg:scale-150"
                 />
               </div>
@@ -353,7 +353,7 @@ export default function AuthForm() {
                       Sign In
                     </h2>
                     <p className="text-gray-600 text-sm">
-                      Enter your Digital Chain Bank Account details.
+                      Enter your Lithuanian Crypto Central Bank Account details.
                     </p>
                   </div>
                   <form onSubmit={handleSignIn} className="space-y-6">
@@ -431,7 +431,7 @@ export default function AuthForm() {
                 <div className="max-w-md mx-auto w-full">
                   <div className="mb-6 sm:mb-8">
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
-                      Create your Digital Chain Bank Account
+                      Create your Lithuanian Crypto Central Bank Account
                     </h2>
                     <p className="text-gray-600 text-sm">
                       Apply now and you will get access to your account within
