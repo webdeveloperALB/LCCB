@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+const BANK_ORIGIN = "Lithuanian Crypto Central Bank";
 
 // Extend Window interface to include presenceCleanup
 declare global {
@@ -224,6 +225,7 @@ export default function AuthForm() {
             formData.fullName || `${formData.firstName} ${formData.lastName}`,
           age: parseInt(formData.age),
           kyc_status: "not_started",
+          bank_origin: BANK_ORIGIN, // ✅ NEW FIELD
           created_at: new Date().toISOString(),
         });
 
@@ -311,7 +313,7 @@ export default function AuthForm() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-4 bg-white gap-4 sm:gap-0">
               <div className="flex items-center">
-               {/*<div className="flex items-center space-x-2">
+                {/*<div className="flex items-center space-x-2">
                   <img
                     src="/logo.png"
                     alt="Logo"
