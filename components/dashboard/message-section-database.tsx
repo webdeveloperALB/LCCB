@@ -122,7 +122,7 @@ export default function MessageSection({ userProfile }: MessageSectionProps) {
     return (
       <div className="h-full w-full flex items-center justify-center">
         <div className="flex items-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F26623]"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0A7F8D]"></div>
           <span className="ml-2">Loading messages...</span>
         </div>
       </div>

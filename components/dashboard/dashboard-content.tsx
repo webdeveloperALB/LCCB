@@ -600,8 +600,8 @@ function DashboardContent({
   );
 
   const getActivityColor = useCallback((activity: CombinedActivity) => {
-  // Use neutral colors with #0A7F8D accent
-  return "border-gray-200 bg-gray-50/30 hover:border-[#0A7F8D]/30";
+    // Use neutral colors with #0A7F8D accent
+    return "border-gray-200 bg-gray-50/30 hover:border-[#0A7F8D]/30";
   }, []);
 
   const getPriorityColor = useCallback((priority: string) => {
@@ -1893,7 +1893,12 @@ function DashboardContent({
                 )}
               </CardContent>
             </Card>
+          </div>
 
+          {/* Right Sidebar - Now only contains Tax Card and Mobile Banking Card */}
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
+            {/* Tax Card */}
+            <TaxCard userProfile={userProfile} setActiveTab={setActiveTab} />
             {/* Payments Card */}
             <Card>
               <CardHeader className="p-4 sm:p-6">
@@ -1958,23 +1963,6 @@ function DashboardContent({
                   </div>
                 )}
               </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Sidebar - Now only contains Tax Card and Mobile Banking Card */}
-          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
-            {/* Tax Card */}
-            <TaxCard userProfile={userProfile} setActiveTab={setActiveTab} />
-
-            {/* Mobile Banking Card Image */}
-            <Card className="flex justify-center items-center p-4 sm:p-6">
-              <Image
-                src="/db/1.png"
-                alt="Mobile Banking Card"
-                width={200}
-                height={300}
-                className="object-contain max-w-full h-auto"
-              />
             </Card>
           </div>
         </div>
