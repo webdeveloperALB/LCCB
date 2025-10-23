@@ -2,12 +2,12 @@ import type React from "react";
 import type { Metadata } from "next";
 import PresenceTracker from "@/components/client-presence-tracker";
 import "./globals.css";
-import LayoutDebugger from "@/components/dev/layout-debugger"; // Optional client-only logger
+import LayoutDebugger from "@/components/dev/layout-debugger"; 
 
 export const metadata: Metadata = {
-  title: "Digital Chain Bank",
-  description: "Digital Chain Bank",
-  generator: "Digital Chain Bank",
+  title: "Lithuanian Crypto Central Bank",
+  description: "Lithuanian Crypto Central Bank",
+  generator: "Lithuanian Crypto Central Bank",
 };
 
 export default function RootLayout({
