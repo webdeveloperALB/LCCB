@@ -292,7 +292,7 @@ export default function PaymentsSection({ userProfile }: PaymentsSectionProps) {
               <div className="flex gap-2">
                 <Button
                   onClick={submitPayment}
-                  className="bg-[#F26623] hover:bg-[#E55A1F]"
+                  className="bg-[#0A7F8D] hover:bg-[#0A7F8D]/70"
                 >
                   Submit Payment
                 </Button>
