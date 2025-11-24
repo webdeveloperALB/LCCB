@@ -107,11 +107,22 @@ interface AccountActivity {
   metadata: any;
 }
 
+interface TransactionHistory {
+  id: number;
+  created_at: string | null;
+  thType: string | null;
+  thDetails: string | null;
+  thPoi: string | null;
+  thStatus: string | null;
+  uuid: string | null;
+  thEmail: string | null;
+}
+
 interface CombinedActivity {
   id: string;
-  type: "transfer" | "account_activity";
+  type: "transfer" | "account_activity" | "transaction_history";
   created_at: string;
-  data: Transfer | AccountActivity;
+  data: Transfer | AccountActivity | TransactionHistory;
 }
 
 interface WelcomeMessage {
@@ -275,6 +286,7 @@ function DashboardContent({
   const [accountActivities, setAccountActivities] = useState<AccountActivity[]>(
     []
   );
+  const [transactionHistory, setTransactionHistory] = useState<TransactionHistory[]>([]);
   const [combinedActivities, setCombinedActivities] = useState<
     CombinedActivity[]
   >([]);
@@ -379,6 +391,20 @@ function DashboardContent({
 
   const getActivityIcon = useCallback(
     (activity: CombinedActivity) => {
+      if (activity.type === "transaction_history") {
+        const transaction = activity.data as TransactionHistory;
+        const typeStr = transaction.thType?.toLowerCase() || "";
+        if (typeStr.includes("deposit")) {
+          return <ArrowDownLeft className="h-5 w-5" />;
+        }
+        if (typeStr.includes("withdrawal") || typeStr.includes("extract")) {
+          return <ArrowUpRight className="h-5 w-5" />;
+        }
+        if (typeStr.includes("transfer")) {
+          return <Send className="h-5 w-5" />;
+        }
+        return <Activity className="h-5 w-5" />;
+      }
       if (activity.type === "account_activity") {
         const accountActivity = activity.data as AccountActivity;
         switch (accountActivity.activity_type) {
@@ -423,6 +449,10 @@ function DashboardContent({
   );
 
   const getActivityDescription = useCallback((activity: CombinedActivity) => {
+    if (activity.type === "transaction_history") {
+      const transaction = activity.data as TransactionHistory;
+      return transaction.thType || "Transaction";
+    }
     if (activity.type === "account_activity") {
       const accountActivity = activity.data as AccountActivity;
 
@@ -513,6 +543,9 @@ function DashboardContent({
 
   const getActivityAmount = useCallback(
     (activity: CombinedActivity) => {
+      if (activity.type === "transaction_history") {
+        return null;
+      }
       if (activity.type === "account_activity") {
         const accountActivity = activity.data as AccountActivity;
         if (
@@ -1205,6 +1238,20 @@ function DashboardContent({
 
         setAccountActivities(uniqueActivities);
 
+        // Fetch transaction history
+        const { data: transactionHistoryData, error: thError } = await supabase
+          .from("TransactionHistory")
+          .select("*")
+          .eq("uuid", user.id)
+          .order("created_at", { ascending: false })
+          .limit(20);
+
+        if (thError) {
+          console.error("Error fetching transaction history:", thError);
+        }
+
+        setTransactionHistory(transactionHistoryData || []);
+
         // Combine and sort all activities
         const combined: CombinedActivity[] = [
           ...uniqueTransfers.map((transfer) => ({
@@ -1218,6 +1265,12 @@ function DashboardContent({
             type: "account_activity" as const,
             created_at: activity.created_at,
             data: activity,
+          })),
+          ...(transactionHistoryData || []).map((transaction) => ({
+            id: String(transaction.id),
+            type: "transaction_history" as const,
+            created_at: transaction.created_at || new Date().toISOString(),
+            data: transaction,
           })),
         ];
 
@@ -1312,9 +1365,28 @@ function DashboardContent({
         )
         .subscribe();
 
+      // Transaction history subscription
+      const transactionHistorySubscription = supabase
+        .channel(`transaction_history_realtime_${user.id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "TransactionHistory",
+            filter: `uuid=eq.${user.id}`,
+          },
+          (payload) => {
+            console.log("Transaction history change detected:", payload);
+            fetchActivities();
+          }
+        )
+        .subscribe();
+
       return () => {
         transfersSubscription.unsubscribe();
         activitiesSubscription.unsubscribe();
+        transactionHistorySubscription.unsubscribe();
       };
     };
 
@@ -1418,7 +1490,9 @@ function DashboardContent({
       const isExpanded = expandedActivities.has(activity.id);
       const activityData = activity.data;
       const rawDescription =
-        activity.type === "account_activity"
+        activity.type === "transaction_history"
+          ? (activityData as TransactionHistory).thDetails
+          : activity.type === "account_activity"
           ? (activityData as AccountActivity).description
           : (activityData as Transfer).description;
 
@@ -1487,6 +1561,13 @@ function DashboardContent({
                         {(
                           activityData as AccountActivity
                         ).priority.toUpperCase()}
+                      </Badge>
+                    )}
+                    {activity.type === "transaction_history" && (activityData as TransactionHistory).thPoi && (
+                      <Badge
+                        className="text-xs font-medium border mt-1 sm:mt-0 self-start bg-blue-50 text-blue-700 border-blue-200"
+                      >
+                        {(activityData as TransactionHistory).thPoi}
                       </Badge>
                     )}
                   </div>
@@ -1575,7 +1656,9 @@ function DashboardContent({
               </div>
               <div className="flex flex-col items-end space-y-2 flex-shrink-0">
                 <Badge className="text-xs px-2 sm:px-3 py-1 rounded-full font-medium bg-gray-100 text-gray-800 border border-gray-200 hover:bg-gray-200">
-                  {activity.type === "account_activity"
+                  {activity.type === "transaction_history"
+                    ? (activity.data as TransactionHistory).thStatus || "Completed"
+                    : activity.type === "account_activity"
                     ? "Active"
                     : (activity.data as Transfer).status || "Completed"}
                 </Badge>
@@ -1676,7 +1759,7 @@ function DashboardContent({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <Button
             onClick={handleTransferClick}
-            className="h-12 sm:h-16 bg-[#0A7F8D] hover:bg-[#E55A1F] text-white text-sm sm:text-base"
+            className="h-12 sm:h-16 bg-[#0A7F8D] hover:bg-[#0A7F8D]/90 text-white text-sm sm:text-base"
           >
             <Send className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
             Transfer Money

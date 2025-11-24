@@ -282,7 +282,7 @@ export default function TaxCard({ userProfile, setActiveTab }: TaxCardProps) {
               </div>
             </div>
           </TabsContent>
-          
+
           {/* History Tab */}
           <TabsContent value="history" className="space-y-4 mt-6">
             <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -311,22 +311,6 @@ export default function TaxCard({ userProfile, setActiveTab }: TaxCardProps) {
                       {formatDate(taxRecord.created_at)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                    <span className="text-sm text-gray-600">
-                      Last Modified:
-                    </span>
-                    <span className="text-sm font-medium">
-                      {formatDate(taxRecord.updated_at)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-sm text-gray-600">
-                      Total Processed:
-                    </span>
-                    <span className="text-sm font-bold text-green-700">
-                      {formatCurrency(getTotalTaxes())}
-                    </span>
-                  </div>
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500">
@@ -337,21 +321,6 @@ export default function TaxCard({ userProfile, setActiveTab }: TaxCardProps) {
             </div>
           </TabsContent>
         </Tabs>
-
-        {/* Quick Actions */}
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <div className="flex space-x-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => window.location.reload()}
-              className="flex-1"
-            >
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

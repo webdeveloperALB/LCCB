@@ -350,8 +350,8 @@ export default function Page() {
   console.groupEnd();
 
   const LoadingScreen = ({ message }: { message: string }) => (
-    <div className="min-h-screen flex flex-col items-center justify-center space-y-4 bg-gradient-to-br from-orange-50 to-orange-100">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0A7F8D]"></div>
+    <div className="min-h-screen flex flex-col items-center justify-center space-y-4 bg-[#0a7f8f]/10">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0a7f8f]"></div>
       <p className="text-gray-600 text-lg text-center">{message}</p>
       {error && (
         <div className="text-center max-w-md">
@@ -412,7 +412,6 @@ export default function Page() {
     </div>
   );
 
-  // Show loading only when truly initializing
   if (loading && hasInitialized.current) {
     return <LoadingScreen message="Loading your account..." />;
   }

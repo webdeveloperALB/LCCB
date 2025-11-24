@@ -276,7 +276,7 @@ export default function Sidebar({
       <div
         className={`
           fixed md:relative
-          w-64 bg-[#F5F0F0] h-screen flex flex-col
+          w-64 bg-[#0a7f8f]/10 h-screen flex flex-col
           transform transition-transform duration-300 ease-in-out z-50
           ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0

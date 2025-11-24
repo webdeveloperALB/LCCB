@@ -37,3 +37,5 @@ export type User = {
   kyc_status: 'not_started' | 'pending' | 'approved' | 'rejected'
   is_admin: boolean
 }
+
+

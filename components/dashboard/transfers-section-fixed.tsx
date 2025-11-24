@@ -609,7 +609,7 @@ export default function TransfersSection({
         .balance-card:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-          border-color: #0A7F8D;
+          border-color: #0a7f8d;
         }
         .transfer-form {
           background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -632,7 +632,7 @@ export default function TransfersSection({
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .currency-badge {
-          background: linear-gradient(135deg, #0A7F8D 0%, #0A7F8D 100%);
+          background: linear-gradient(135deg, #0a7f8d 0%, #0a7f8d 100%);
           box-shadow: 0 2px 8px rgba(10, 127, 141, 0.3);
         }
         .live-rate-indicator {
@@ -1002,10 +1002,10 @@ export default function TransfersSection({
                         <Input
                           type="number"
                           step="0.00000001"
-                          value={internalFormData.amount}
+                          value={bankFormData.amount}
                           onChange={(e) =>
-                            setInternalFormData({
-                              ...internalFormData,
+                            setBankFormData({
+                              ...bankFormData,
                               amount: e.target.value,
                             })
                           }
@@ -1329,7 +1329,7 @@ export default function TransfersSection({
                         {transfer.transfer_type === "bank_transfer" &&
                           transfer.status === "Pending" && (
                             <div className="mt-2 text-xs text-amber-600 bg-amber-50 p-2 rounded">
-                              Bank transfer pending admin approval
+                              Bank transfer pending approval
                             </div>
                           )}
                       </div>
