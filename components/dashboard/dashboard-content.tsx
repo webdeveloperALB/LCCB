@@ -1484,7 +1484,7 @@ function DashboardContent({
   const activitiesDisplay = useMemo(() => {
     const displayActivities = showAllActivities
       ? deferredActivities
-      : deferredActivities.slice(0, 3);
+      : deferredActivities.slice(0, 2);
 
     return displayActivities.map((activity) => {
       const isExpanded = expandedActivities.has(activity.id);
@@ -1565,7 +1565,7 @@ function DashboardContent({
                     )}
                     {activity.type === "transaction_history" && (activityData as TransactionHistory).thPoi && (
                       <Badge
-                        className="text-xs font-medium border mt-1 sm:mt-0 self-start bg-blue-50 text-blue-700 border-blue-200"
+                        className="text-xs font-medium border mt-1 sm:mt-0 self-start hover:bg-blue-50 bg-blue-50 text-blue-700 border-blue-200"
                       >
                         {(activityData as TransactionHistory).thPoi}
                       </Badge>
