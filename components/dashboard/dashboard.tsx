@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase";
 import Sidebar from "./sidebar";
 import DashboardContent from "./dashboard-content";
 import AccountsSection from "./accounts-section";
+import FundAccount from "./fund-account";
 import DepositsSection from "./transaction-history";
 import PaymentsSection from "./payments-section";
 import CardSection from "./card-section";
@@ -489,6 +490,7 @@ class SectionRenderer {
     support: SupportSection,
     profile: Profile,
     loans: LoansSection,
+    fund_account: FundAccount
   };
 
   private memoizedComponents = new Map<string, React.ComponentType<any>>();
