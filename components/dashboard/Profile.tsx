@@ -81,7 +81,7 @@ export default function Profile({ userProfile }: ProfileProps) {
         is_admin: usersData?.is_admin || false,
         is_manager: usersData?.is_manager || false,
         is_superiormanager: usersData?.is_superiormanager || false,
-        created_at: usersData?.created_at || profilesData?.created_at || "",
+        created_at: usersData?.created_at || "",
       });
     } catch (error) {
       console.error("Error fetching user data:", error);
