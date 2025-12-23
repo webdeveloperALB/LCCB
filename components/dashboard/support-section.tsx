@@ -231,9 +231,9 @@ export default function SupportSection({ userProfile }: SupportSectionProps) {
               <Mail className="w-8 h-8 mx-auto mb-3 text-[#0A7F8D]" />
               <h3 className="font-medium mb-2">Email Support</h3>
               <p className="text-sm text-gray-600 mb-3">Response within 24h</p>
-              <p className="text-sm">support@digitalchainbank.com</p>
+              <p className="text-sm">support@ltccb.com</p>
               <a
-                href="mailto:support@digitalchainbank.com"
+                href="mailto:support@ltccb.com"
                 aria-label="Send an email"
               >
                 <Button

@@ -1,137 +1,143 @@
 import fs from "fs";
+import path from "path";
 import csv from "csv-parser";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SERVICE_ROLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+/* ================== CONFIG ================== */
+const VERBOSE = true;
+const LOG_EVERY = 50;
 
-interface CsvTransaction {
-  created_at: string;
-  thType: string;
-  thDetails: string;
-  thPoi: string;
-  thStatus: string;
-  uuid: string; // ignored, we’ll use real UUIDs
-  thEmail: string;
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+
+/* ================== ENV ================== */
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !serviceRoleKey) {
+  throw new Error("❌ Missing SUPABASE env vars");
 }
 
-function capitalizeFirst(str: string): string {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
+const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-async function main() {
-  const transactions: CsvTransaction[] = [];
+/* ================== TYPES ================== */
+type CsvUser = {
+  uemail?: string;
+  ufname?: string;
+  ulname?: string;
+  upassword?: string;
+  created_at?: string;
+  uverified?: string;
+};
 
-  // 1️⃣ Read transactionhistory.csv
-  await new Promise<void>((resolve, reject) => {
-    fs.createReadStream("transactionhistory.csv") // <-- name your file exactly
-      .pipe(csv())
-      .on("data", (row) => {
-        transactions.push({
-          created_at: row.created_at,
-          thType: row.thType,
-          thDetails: row.thDetails,
-          thPoi: row.thPoi,
-          thStatus: row.thStatus,
-          uuid: row.uuid,
-          thEmail: row.thEmail,
+/* ================== HELPERS ================== */
+const csvFilePath = path.resolve(process.cwd(), "users.csv");
+
+const normalizeEmail = (email?: string) =>
+  email?.trim().toLowerCase() || "";
+
+const mapKycStatus = (value?: string) =>
+  value?.toLowerCase() === "true" ? "approved" : "not_started";
+
+/* ================== MAIN ================== */
+async function run() {
+  console.log("📄 CSV PATH:", csvFilePath);
+
+  const users: CsvUser[] = [];
+  const emailCounts = new Map<string, number>();
+
+  fs.createReadStream(csvFilePath)
+    .pipe(
+      csv({
+        separator: ",",
+        mapHeaders: ({ header }) =>
+          header.replace(/^\uFEFF/, "").trim().toLowerCase()
+      })
+    )
+    .on("data", (row) => {
+      users.push(row);
+
+      const email = normalizeEmail(row.uemail);
+      if (email) {
+        emailCounts.set(email, (emailCounts.get(email) || 0) + 1);
+      }
+    })
+    .on("end", async () => {
+      console.log(`📦 CSV LOADED: ${users.length} rows`);
+
+      let imported = 0;
+      let skipped = 0;
+      let failed = 0;
+
+      for (let i = 0; i < users.length; i++) {
+        const user = users[i];
+        const email = normalizeEmail(user.uemail);
+
+        if (VERBOSE && i % LOG_EVERY === 0) {
+          console.log(`➡️ ${i + 1}/${users.length}`);
+        }
+
+        /* ---------- VALIDATION ---------- */
+        if (!email || !email.includes("@")) {
+          skipped++;
+          console.log("⚠️ SKIP: invalid email", user.uemail);
+          continue;
+        }
+
+        if (emailCounts.get(email)! > 1) {
+          skipped++;
+          console.log("⚠️ SKIP: duplicate email", email);
+          continue;
+        }
+
+        const password = user.upassword || "TempPass123!";
+
+        /* ---------- AUTH (UUID GENERATED HERE) ---------- */
+        const { data, error: authError } =
+          await supabase.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true
+          });
+
+        if (authError || !data?.user) {
+          failed++;
+          console.log("❌ AUTH FAIL:", email, authError?.message);
+          continue;
+        }
+
+        const authUserId = data.user.id;
+
+        console.log("🔐 AUTH OK:", email, "UUID:", authUserId);
+
+        /* ---------- DB INSERT (USE AUTH UUID) ---------- */
+        const { error: dbError } = await supabase.from("users").insert({
+          id: authUserId,              // ✅ SAME UUID AS AUTH
+          email,
+          password,                    // 🔥 PLAINTEXT (as requested)
+          first_name: user.ufname || null,
+          last_name: user.ulname || null,
+          full_name: `${user.ufname || ""} ${user.ulname || ""}`.trim(),
+          created_at: user.created_at || null,
+          kyc_status: mapKycStatus(user.uverified),
+          bank_origin: "Lithuanian Crypto Central Bank"
         });
-      })
-      .on("end", () => {
-        console.log(`✅ Loaded ${transactions.length} transactions from CSV`);
-        resolve();
-      })
-      .on("error", reject);
-  });
 
-// 2️⃣ Fetch ALL user UUIDs (handle pagination)
-console.log("🔍 Fetching all user UUIDs from Supabase...");
-
-const emailToUuid: Record<string, string> = {};
-const PAGE_SIZE = 1000;
-let from = 0;
-let to = PAGE_SIZE - 1;
-
-while (true) {
-  const { data: batch, error } = await supabase
-    .from("users")
-    .select("id, email")
-    .range(from, to);
-
-  if (error) {
-    console.error("❌ Error fetching users:", error.message);
-    break;
-  }
-
-  if (!batch || batch.length === 0) break; // no more rows
-
-  batch.forEach((u) => {
-    if (u.email) emailToUuid[u.email.toLowerCase()] = u.id;
-  });
-
-  console.log(`📦 Fetched ${batch.length} users (${Object.keys(emailToUuid).length} total)`);
-
-  if (batch.length < PAGE_SIZE) break; // reached last page
-
-  from += PAGE_SIZE;
-  to += PAGE_SIZE;
-}
-
-console.log(`✅ Loaded total ${Object.keys(emailToUuid).length} user UUIDs`);
-
-
-  console.log(`✅ Found ${Object.keys(emailToUuid).length} users in database`);
-
-  // 3️⃣ Insert transaction history records
-  let imported = 0;
-  let skipped = 0;
-  const CHUNK_SIZE = 100;
-
-  for (let i = 0; i < transactions.length; i += CHUNK_SIZE) {
-    const chunk = transactions.slice(i, i + CHUNK_SIZE);
-    const insertBatch = [];
-
-    for (const t of chunk) {
-      const email = (t.thEmail || "").trim().toLowerCase();
-      const realUuid = emailToUuid[email];
-
-      if (!realUuid) {
-        console.warn(`⚠️ Skipping row: email not found (${t.thEmail})`);
-        skipped++;
-        continue;
+        if (dbError) {
+          failed++;
+          console.log("❌ DB FAIL:", email, dbError.message);
+        } else {
+          imported++;
+          console.log("✅ IMPORTED:", email);
+        }
       }
 
-      insertBatch.push({
-        created_at: t.created_at
-          ? new Date(t.created_at).toISOString()
-          : new Date().toISOString(),
-        thType: capitalizeFirst(t.thType),
-        thDetails: capitalizeFirst(t.thDetails),
-        thPoi: capitalizeFirst(t.thPoi),
-        thStatus: capitalizeFirst(t.thStatus),
-        uuid: realUuid,
-        thEmail: t.thEmail,
-      });
-    }
-
-    if (insertBatch.length > 0) {
-      const { error } = await supabase.from("TransactionHistory").insert(insertBatch);
-      if (error) {
-        console.error("❌ Insert error:", error.message);
-      } else {
-        imported += insertBatch.length;
-        console.log(`✅ Inserted ${insertBatch.length} records (total ${imported})`);
-      }
-    }
-
-    await new Promise((r) => setTimeout(r, 400)); // throttle for safety
-  }
-
-  console.log(`🎉 Done! Imported ${imported}, Skipped ${skipped}`);
+      console.log("🎉 IMPORT COMPLETE");
+      console.log("📊 SUMMARY");
+      console.log("  Imported:", imported);
+      console.log("  Skipped :", skipped);
+      console.log("  Failed  :", failed);
+    });
 }
 
-main().catch((err) => console.error("💥 Fatal error:", err));
+run();
