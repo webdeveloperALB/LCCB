@@ -39,14 +39,16 @@ export function useLatestMessage() {
         .eq("is_read", false)
         .order("created_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== "PGRST116") {
+      if (error) {
         console.error("Error fetching latest message:", error.message || error);
         setError(error.message || "Failed to fetch message");
-      } else {
-        setLatestMessage(data || null);
+        setLatestMessage(null);
+        return;
       }
+
+      setLatestMessage(data ?? null);
     } catch (err: any) {
       console.error("Error in fetchLatestMessage:", err.message || err);
       setError(err.message || "Failed to fetch message");
